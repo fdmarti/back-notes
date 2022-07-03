@@ -1,9 +1,11 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors');
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
+app.use(cors());
 app.use(express.json());
 
 const notes = [
@@ -28,10 +30,7 @@ const notes = [
 ];
 
 app.get('/api/notes', (req, res) => {
-	res.json({
-		notes,
-		totalNotes: notes.length
-	}).status(200);
+	res.json(notes).status(200);
 });
 app.get('/api/notes/:id', (req, res) => {
 	const iId = Number(req.params.id);
