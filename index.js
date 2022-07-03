@@ -1,11 +1,12 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+
 const app = express();
 const port = 3001;
 
 app.use(express.json());
 
-let notes = [
+const notes = [
 	{
 		iId: 1,
 		content: 'HTML is easy',
@@ -32,28 +33,34 @@ app.get('/api/notes', (req, res) => {
 		totalNotes: notes.length
 	}).status(200);
 });
-app.get('/api/notes/:id', (req, res) =>{
+app.get('/api/notes/:id', (req, res) => {
 	const iId = Number(req.params.id);
-	const note = notes.find(element => element.iId === iId);
+	const note = notes.find((element) => element.iId === iId);
 	res.status(200).json({
 		note
 	});
 });
 app.post('/api/notes', (req, res) => {
-	const body = req.body;
+	const { body } = req;
 
-	console.log(body);
-	const newNote = {
-		iId: uuidv4(),
-		content: body.content,
-		date: new Date().toISOString,
-		important: body.important || false
+	if (body.content) {
+		const newNote = {
+			iId: uuidv4(),
+			content: body.content,
+			date: new Date().toISOString,
+			important: body.important || false
 
-	};
+		};
 
-	res.status(200).json({
-		newNote
-	});
+		notes.unshift(newNote);
+		res.status(200).json({
+			newNote
+		});
+	} else {
+		res.status(400).json({
+			error: 'Falta el content'
+		});
+	}
 });
 app.listen(port, () => {
 	console.log('Server running on port', port);
